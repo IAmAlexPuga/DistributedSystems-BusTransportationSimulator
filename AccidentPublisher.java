@@ -104,7 +104,7 @@ public class AccidentPublisher {
 
     // --- Constructors: -----------------------------------------------------
 
-    private AccidentPublisher() {
+    AccidentPublisher() {
         super();
     }
 

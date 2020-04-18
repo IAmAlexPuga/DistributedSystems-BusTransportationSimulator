@@ -104,7 +104,7 @@ public class PositionPublisher {
 
     // --- Constructors: -----------------------------------------------------
 
-    private PositionPublisher() {
+    PositionPublisher() {
         super();
     }
 

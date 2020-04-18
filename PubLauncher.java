@@ -19,6 +19,7 @@ public class PubLauncher
 		StartThreads();
 	}
 	
+	// Starst all the threads/buses and waits for threads to terminate
 	public void StartThreads()
 	{
 		try
@@ -26,6 +27,11 @@ public class PubLauncher
 			for(int i = 0; i < threads.length; i++)
 			{
 				threads[i].Run();
+			}
+			System.out.println("All busues have started. Waiting for them to finish...");
+			for(int i = 0; i < threads.length; i++)
+			{
+				threads[i].join();
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -74,7 +80,7 @@ public class PubLauncher
 					p.route = Route2N;
 				}
 				
-				p.stopNumber = 0;
+				p.stopNumber = 1;
 				
 				key = (String)e.nextElement();
 				p.numStops = (int)propFile.get(key);
@@ -84,15 +90,15 @@ public class PubLauncher
 				
 				key = (String)e.nextElement();
 				p.vehicle = (String)propFile.get(key);
-				threads[count] = new PubThread(p);
+				threads[count] = new PubThread(p,now);
 				count++;
 				key = (String)e.nextElement();
 				p.vehicle = (String)propFile.get(key);
-				threads[count] = new PubThread(p);
+				threads[count] = new PubThread(p,now);
 				count++;
 				key = (String)e.nextElement();
 				p.vehicle = (String)propFile.get(key);
-				threads[count] = new PubThread(p);
+				threads[count] = new PubThread(p,now);
 				count++;
 				
 			}
