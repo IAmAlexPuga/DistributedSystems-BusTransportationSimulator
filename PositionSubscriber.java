@@ -184,13 +184,11 @@ public class PositionSubscriber {
 
             // --- Wait for data --- //
 
-            final long receivePeriodSec = 4;
+            final long receivePeriodSec = 0;
 
             for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
-                System.out.println("Position subscriber sleeping for "
-                + receivePeriodSec + " sec...");
 
                 try {
                     Thread.sleep(receivePeriodSec * 1000);  // in millisec

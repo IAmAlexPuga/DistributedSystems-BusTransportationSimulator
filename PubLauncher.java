@@ -2,6 +2,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
@@ -9,30 +11,31 @@ import java.util.Properties;
 
 public class PubLauncher
 {
-	private int RouteCount,BusCount;
-	private String Route1N, Route2N;
-	private PubThread[] threads = new PubThread[6];
+	private static int RouteCount,BusCount;
+	private static String Route1N, Route2N;
+	private static  PubThread[] threads = new PubThread[6];
 	
-	public void Main(String[] args)
+	public static void main(String[] args)
 	{
 		InitializeComponents();
 		StartThreads();
 	}
 	
 	// Starst all the threads/buses and waits for threads to terminate
-	public void StartThreads()
+	public static void StartThreads()
 	{
 		try
 		{
+			System.out.println("All busues have started. Waiting for them to finish...");
 			for(int i = 0; i < threads.length; i++)
 			{
-				threads[i].Run();
+				threads[i].start();
 			}
-			System.out.println("All busues have started. Waiting for them to finish...");
 			for(int i = 0; i < threads.length; i++)
 			{
 				threads[i].join();
 			}
+			System.out.println("All busues have finished.");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -40,73 +43,65 @@ public class PubLauncher
 	}
 	
 	// Initializes feilds
-	public void InitializeComponents()
+	public static void InitializeComponents()
 	{
-		try(InputStream file = new FileInputStream("path/pub.properties"))
+		String path = FileSystems.getDefault().getPath("pub.properties").toAbsolutePath().toString();
+		try(InputStream file = new FileInputStream(path))
 		{
 			// Create and open the prop file
 			Properties propFile = new Properties();
 			propFile.load(file);
 			
-			Enumeration e = propFile.propertyNames();
 			
 			// Init fields
-			String key = (String)e.nextElement();
-			RouteCount = (int)propFile.get(key);
+			RouteCount = Integer.parseInt((String)propFile.get("numRoutes"));
 			
-			key = (String)e.nextElement();
-			BusCount = (int)propFile.get(key);
+			BusCount = Integer.parseInt((String)propFile.get("numVehicles"));
 			
-			key = (String)e.nextElement();
-			Route1N = (String)propFile.get(key);
+			Route1N = (String)propFile.get("route1");
 			
-			key = (String)e.nextElement();
-			Route2N = (String)propFile.get(key);
+			Route2N = (String)propFile.get("route2");
 			
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 			LocalDateTime now = LocalDateTime.now();
-			int count = 0;
 			Position p = new Position();
+			
+			// Common attr
 			p.timestamp = now.toString();
 			p.trafficConditions = "Normal";
 			p.fillInRation = 0;
-			// Init the PubThreads
-			while(e.hasMoreElements())
-			{
-				if(count == 0)
-				{
-					p.route = Route1N;
-				}else {
-					p.route = Route2N;
-				}
-				
-				p.stopNumber = 1;
-				
-				key = (String)e.nextElement();
-				p.numStops = (int)propFile.get(key);
-				
-				key = (String)e.nextElement();
-				p.timeBetweenStops = (int)propFile.get(key);
-				
-				key = (String)e.nextElement();
-				p.vehicle = (String)propFile.get(key);
-				threads[count] = new PubThread(p,now);
-				count++;
-				key = (String)e.nextElement();
-				p.vehicle = (String)propFile.get(key);
-				threads[count] = new PubThread(p,now);
-				count++;
-				key = (String)e.nextElement();
-				p.vehicle = (String)propFile.get(key);
-				threads[count] = new PubThread(p,now);
-				count++;
-				
-			}
+			p.stopNumber = 1;
 			
 			
+			// Route 1 common attr
+			p.numStops = Integer.parseInt((String)propFile.get("route1numStops"));
+			p.timeBetweenStops = Integer.parseInt((String)propFile.get("route1TimeBetweenStops"));
+			p.vehicle = (String)propFile.get("route1Vehicle1");
+			threads[0] = new PubThread(p,now);
+			
+			p.vehicle = (String)propFile.get("route1Vehicle2");
+			threads[1] = new PubThread(p,now);
+			
+			p.vehicle = (String)propFile.get("route1Vehicle3");
+			threads[2] = new PubThread(p,now);
+			
+			// Route 2 common attr
+			p.numStops = Integer.parseInt((String)propFile.get("route2numStops"));
+			p.timeBetweenStops = Integer.parseInt((String)propFile.get("route2TimeBetweenStops"));
+			
+			p.vehicle = (String)propFile.get("route2Vehicle1");
+			threads[3] = new PubThread(p,now);
+
+
+			p.vehicle = (String)propFile.get("route2Vehicle2");
+			threads[4] = new PubThread(p,now);
+			
+			p.vehicle = (String)propFile.get("route2Vehicle3");
+			threads[5] = new PubThread(p,now);
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Path: " + path);
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

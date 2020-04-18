@@ -74,9 +74,24 @@ public class PositionPublisher {
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
-	Position p;
-	String timeStampBetween = "";
-	int boarding = 0;
+	// Sets the new Position
+	public void SetPosition(int boarding, String time, Position p) {
+		// TODO Auto-generated method stub
+		this.p = p;
+		this.boarding = boarding;
+		this.timeStampBetween = time;
+	}
+	
+	// Publishes data
+	public void PublishData(int domainId, int sampleCount)
+	{
+		publisherMain(domainId, sampleCount);
+	}
+	
+	static Position p;
+	static String timeStampBetween = "";
+	static int boarding = 0;
+	
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
@@ -95,9 +110,7 @@ public class PositionPublisher {
             LogCategory.NDDS_CONFIG_LOG_CATEGORY_API,
             LogVerbosity.NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
         */
-
-        // --- Run --- //
-        publisherMain(domainId, sampleCount);
+        
     }
 
     // -----------------------------------------------------------------------
@@ -191,7 +204,7 @@ public class PositionPublisher {
             and register the keyed instance prior to writing */
             //instance_handle = writer.register_instance(instance);
 
-            final long sendPeriodMillis = 4 * 1000; // 4 seconds
+            final long sendPeriodMillis = 0 * 1000;
 
             for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
@@ -199,9 +212,10 @@ public class PositionPublisher {
                 System.out.println("Writing Position, count " + count);
 
                 /* Modify the instance to be written here */
-
+                
+                
                 /* Write data */
-                writer.write(instance, instance_handle);
+                writer.write(p, instance_handle);
                 try {
                     Thread.sleep(sendPeriodMillis);
                 } catch (InterruptedException ix) {
@@ -231,11 +245,5 @@ public class PositionPublisher {
         }
     }
 
-	public void SetPosition(int boarding, String time, Position p) {
-		// TODO Auto-generated method stub
-		this.p = p;
-		this.boarding = boarding;
-		this.timeStampBetween = time;
-	}
 }
 

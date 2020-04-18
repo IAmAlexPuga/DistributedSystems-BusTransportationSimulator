@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class PubThread extends Thread
 {
-	Position p;
+	Position p = new Position();
 	LocalDateTime now;
 	DateTimeFormatter dtf;
 	int Cycles = 1;
@@ -16,17 +16,27 @@ public class PubThread extends Thread
 	
 	public PubThread(Position pos, LocalDateTime time)
 	{
-		this.p = pos;
+
+		p.fillInRation = pos.fillInRation;
+		p.numStops = pos.numStops;
+		p.route = pos.route;
+		p.stopNumber = pos.stopNumber;
+		p.timeBetweenStops = pos.timeBetweenStops;
+		p.timestamp = pos.timestamp;
+		p.trafficConditions = pos.trafficConditions;
+		p.vehicle = pos.vehicle;
+		
 		this.now = time;
 		this.dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 		this.pos = new PositionPublisher();
 		this.accident = new AccidentPublisher();
+		
+		System.out.println("Thread " + p.vehicle + " Started");
 	}
 	
-	public void Run()
+	public void run()
 	{
-		System.out.println("Thread " + p.vehicle + " Started");
-		this.start();
+		
 		Random rand = new Random();
 		LocalDateTime old;
 		int departing = 0;
@@ -41,8 +51,13 @@ public class PubThread extends Thread
 			old = this.now;
 			SetTraffic(rand.nextInt(101) + 1);
 			CheckAccident(rand.nextInt(101) + 1);
+			if(p.fillInRation > 0)
+			{
+				departing = rand.nextInt(p.fillInRation);
+			}else {
+				departing = 0;
+			}
 			
-			departing = rand.nextInt(p.fillInRation);
 			Stop(rand.nextInt(100 - p.fillInRation) - departing, GetTimeStampBetween(old));
 			
 			p.stopNumber ++;

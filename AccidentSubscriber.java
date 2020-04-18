@@ -158,7 +158,7 @@ public class AccidentSubscriber {
             the configuration file USER_QOS_PROFILES.xml */
 
             topic = participant.create_topic(
-                "Example Accident",
+                "P3464_EECS_apuga: PT/ALR/ACC",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {
