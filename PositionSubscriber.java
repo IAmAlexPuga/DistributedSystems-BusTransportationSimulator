@@ -78,9 +78,9 @@ public class PositionSubscriber {
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
-        if (args.length >= 1) {
+        /*if (args.length >= 1) {
             domainId = Integer.valueOf(args[0]).intValue();
-        }
+        }*/
 
         // -- Get max loop count; 0 means infinite loop --- //
         int sampleCount = 0;
@@ -104,7 +104,7 @@ public class PositionSubscriber {
 
     // --- Constructors: -----------------------------------------------------
 
-    private PositionSubscriber() {
+    PositionSubscriber() {
         super();
     }
 
@@ -158,7 +158,7 @@ public class PositionSubscriber {
             the configuration file USER_QOS_PROFILES.xml */
 
             topic = participant.create_topic(
-                "P3464_EECS_apuga: PT/POS",
+            		"P3464_EECS_apuga: PT/POS",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {

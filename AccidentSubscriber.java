@@ -74,19 +74,22 @@ public class AccidentSubscriber {
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
-
+	public void Invoke()
+	{
+		subscriberMain(0, 0);
+	}
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
-        if (args.length >= 1) {
+        /*if (args.length >= 1) {
             domainId = Integer.valueOf(args[0]).intValue();
-        }
+        }*/
 
         // -- Get max loop count; 0 means infinite loop --- //
         int sampleCount = 0;
-        if (args.length >= 2) {
+        /*if (args.length >= 2) {
             sampleCount = Integer.valueOf(args[1]).intValue();
-        }
+        }*/
 
         /* Uncomment this to turn on additional logging
         Logger.get_instance().set_verbosity_by_category(
@@ -95,7 +98,7 @@ public class AccidentSubscriber {
         */
 
         // --- Run --- //
-        subscriberMain(domainId, sampleCount);
+        
     }
 
     // -----------------------------------------------------------------------
@@ -104,7 +107,7 @@ public class AccidentSubscriber {
 
     // --- Constructors: -----------------------------------------------------
 
-    private AccidentSubscriber() {
+    AccidentSubscriber() {
         super();
     }
 
@@ -184,13 +187,11 @@ public class AccidentSubscriber {
 
             // --- Wait for data --- //
 
-            final long receivePeriodSec = 4;
+            final long receivePeriodSec = 0;
 
             for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
-                System.out.println("Accident subscriber sleeping for "
-                + receivePeriodSec + " sec...");
 
                 try {
                     Thread.sleep(receivePeriodSec * 1000);  // in millisec

@@ -83,7 +83,7 @@ public class PositionPublisher {
 	}
 	
 	// Publishes data
-	public void PublishData(int domainId, int sampleCount)
+	public static void PublishData(int domainId, int sampleCount)
 	{
 		publisherMain(domainId, sampleCount);
 	}
@@ -110,7 +110,7 @@ public class PositionPublisher {
             LogCategory.NDDS_CONFIG_LOG_CATEGORY_API,
             LogVerbosity.NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
         */
-        
+
     }
 
     // -----------------------------------------------------------------------

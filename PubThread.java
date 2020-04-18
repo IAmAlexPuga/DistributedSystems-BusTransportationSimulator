@@ -9,7 +9,6 @@ public class PubThread extends Thread
 	LocalDateTime now;
 	DateTimeFormatter dtf;
 	int Cycles = 1;
-	boolean Accident = false;
 	
 	PositionPublisher pos;
 	AccidentPublisher accident;
@@ -94,10 +93,9 @@ public class PubThread extends Thread
 	{
 		if(chance < 11)
 		{
-			System.out.println("An accident occured");
 			SetTime(10);
 			p.timestamp = now.toString();
-			Accident = true;
+			PostAccident();
 		}
 	}
 	
@@ -133,7 +131,6 @@ public class PubThread extends Thread
 		
 		accident.SetAccident(acc);
 		System.out.println(p.vehicle + " published a accident message at stop # " + p.stopNumber + " on route " + p.route + "at " + p.timestamp);
-		Accident = false;
 	}
 	
 	// post a stop
@@ -141,7 +138,7 @@ public class PubThread extends Thread
 	{
 		pos.SetPosition(boarding, time, p);
 		System.out.println(p.vehicle + " published a position message at stop # " + p.stopNumber + " on route " + p.route + "at " + p.timestamp);
-		
+		pos.PublishData(0, 0);
 	}
 	
 }
