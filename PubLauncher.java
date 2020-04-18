@@ -25,7 +25,7 @@ public class PubLauncher
 		{
 			for(int i = 0; i < threads.length; i++)
 			{
-				threads[i].Start();
+				threads[i].Run();
 			}
 		}catch(Exception e){
 			e.printStackTrace();

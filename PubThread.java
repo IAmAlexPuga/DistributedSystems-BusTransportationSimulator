@@ -8,8 +8,10 @@ public class PubThread extends Thread
 		this.p = pos;
 	}
 	
-	public void Start()
+	public void Run()
 	{
+		System.out.println("Thread " + p.vehicle + "Started");
+		this.start();
 		
 	}
 }
