@@ -74,7 +74,9 @@ public class PositionPublisher {
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
-
+	Position p;
+	String timeStampBetween = "";
+	int boarding = 0;
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
@@ -228,5 +230,12 @@ public class PositionPublisher {
             //DomainParticipantFactory.finalize_instance();
         }
     }
+
+	public void SetPosition(int boarding, String time, Position p) {
+		// TODO Auto-generated method stub
+		this.p = p;
+		this.boarding = boarding;
+		this.timeStampBetween = time;
+	}
 }
 

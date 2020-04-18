@@ -124,7 +124,7 @@ public class PubThread extends Thread
 	// post a stop
 	public void Stop(int boarding, String time)
 	{
-		
+		pos.SetPosition(boarding, time, p);
 		System.out.println(p.vehicle + " published a position message at stop # " + p.stopNumber + " on route " + p.route + "at " + p.timestamp);
 		
 	}
