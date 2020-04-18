@@ -74,7 +74,7 @@ public class AccidentPublisher {
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
-
+	Accident acc = new Accident();
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
@@ -228,5 +228,10 @@ public class AccidentPublisher {
             //DomainParticipantFactory.finalize_instance();
         }
     }
+
+	public void SetAccident(Accident acc) {
+		// TODO Auto-generated method stub
+		this.acc = acc;
+	}
 }
 
