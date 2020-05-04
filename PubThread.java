@@ -3,6 +3,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 
+import com.rti.dds.domain.DomainParticipant;
+import com.rti.dds.domain.DomainParticipantFactory;
+import com.rti.dds.infrastructure.InstanceHandle_t;
+import com.rti.dds.infrastructure.StatusKind;
+import com.rti.dds.publication.Publisher;
+import com.rti.dds.topic.Topic;
+
+
 public class PubThread extends Thread
 {
 	Position p = new Position();
@@ -12,6 +20,13 @@ public class PubThread extends Thread
 	
 	PositionPublisher pos;
 	AccidentPublisher accident;
+	
+	
+	DomainParticipant participant = null;
+    Publisher publisher = null;
+    Topic topic = null;
+    PositionDataWriter writer = null;
+    InstanceHandle_t instance_handle = InstanceHandle_t.HANDLE_NIL;
 	
 	public PubThread(Position pos, LocalDateTime time)
 	{
@@ -29,39 +44,81 @@ public class PubThread extends Thread
 		this.dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 		this.pos = new PositionPublisher();
 		this.accident = new AccidentPublisher();
+		Random rand = new Random();
 		
+		
+	    
+		participant = DomainParticipantFactory.TheParticipantFactory.create_participant(0, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
+		if (participant == null) 
+		{
+            System.err.println("create_participant error\n");
+            return;
+        }
+		
+		publisher = participant.create_publisher(DomainParticipant.PUBLISHER_QOS_DEFAULT, null /* listener */,StatusKind.STATUS_MASK_NONE);
+        if (publisher == null) 
+        {
+        	
+            System.err.println("create_publisher error\n");
+            return;
+        }
+        
+        String typeName = PositionTypeSupport.get_type_name();
+        PositionTypeSupport.register_type(participant, typeName);
+
+        topic = participant.create_topic("Example Position",typeName, DomainParticipant.TOPIC_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
+        if (topic == null) {
+            System.err.println("create_topic error\n");
+            return;
+        }           
+
+        writer = (PositionDataWriter)publisher.create_datawriter(topic, Publisher.DATAWRITER_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
+        if (writer == null)
+        {
+            System.err.println("create_datawriter error\n");
+            return;
+        }           
+        
 		System.out.println("Thread " + p.vehicle + " Started");
 	}
 	
 	public void run()
 	{
 		
-		Random rand = new Random();
-		LocalDateTime old;
-		int departing = 0;
-
-		while(Cycles < 4)
+		try
 		{
-			if(p.stopNumber > p.numStops)
+			Random rand = new Random();
+			LocalDateTime old;
+			int departing = 0;
+
+			while(Cycles < 4)
 			{
-				Cycles ++;
-				p.stopNumber = 1;
+				if(p.stopNumber > p.numStops)
+				{
+					Cycles ++;
+					p.stopNumber = 1;
+				}
+				old = this.now;
+				SetTraffic(rand.nextInt(101) + 1);
+				CheckAccident(rand.nextInt(101) + 1);
+				if(p.fillInRation > 0)
+				{
+					departing = rand.nextInt(p.fillInRation);
+				}else {
+					departing = 0;
+				}
+				
+				Stop(rand.nextInt(100 - p.fillInRation) - departing, GetTimeStampBetween(old));
+				p.stopNumber ++;
 			}
-			old = this.now;
-			SetTraffic(rand.nextInt(101) + 1);
-			CheckAccident(rand.nextInt(101) + 1);
-			if(p.fillInRation > 0)
-			{
-				departing = rand.nextInt(p.fillInRation);
-			}else {
-				departing = 0;
-			}
-			
-			Stop(rand.nextInt(100 - p.fillInRation) - departing, GetTimeStampBetween(old));
-			
-			p.stopNumber ++;
-		}
-		
+		}finally {
+			 if(participant != null) {
+	                participant.delete_contained_entities();
+
+	                DomainParticipantFactory.TheParticipantFactory.
+	                delete_participant(participant);
+	            }
+		}	
 	}
 	
 	// Sets the traffic and ads the set time based on traffic
@@ -71,13 +128,15 @@ public class PubThread extends Thread
 		{
 			p.trafficConditions = "Light";
 			SetTime((long) (p.timeBetweenStops - (.25 * p.timeBetweenStops)));
-		}else if(chance >= 25 && chance < 90) {
-			p.trafficConditions = "Normal";
-			SetTime((long) (p.timeBetweenStops));
-		}else {
+		}else if(chance > 89)
+		{
 			p.trafficConditions = "Heavy";
 			SetTime((long) (1.5 * p.timeBetweenStops));
+		}else {
+			p.trafficConditions = "Normal";
+			SetTime((long) (p.timeBetweenStops));
 		}
+
 	}
 	
 	// Adds nanosec to old time
@@ -121,7 +180,7 @@ public class PubThread extends Thread
 	}
 	
 	// Posts an accident
-	public void PostAccident()
+	synchronized  public void PostAccident()
 	{
 		Accident acc = new Accident();
 		acc.stopNumber = p.stopNumber;
@@ -129,16 +188,18 @@ public class PubThread extends Thread
 		acc.timestamp = p.timestamp;
 		acc.vehicle = p.vehicle;
 		
-		accident.SetAccident(acc);
+		//accident.SetAccident(acc);
 		System.out.println(p.vehicle + " published a accident message at stop # " + p.stopNumber + " on route " + p.route + "at " + p.timestamp);
+
 	}
 	
 	// post a stop
-	public void Stop(int boarding, String time)
+	synchronized public void Stop(int boarding, String time)
 	{
-		pos.SetPosition(boarding, time, p);
+		p.fillInRation += boarding;
 		System.out.println(p.vehicle + " published a position message at stop # " + p.stopNumber + " on route " + p.route + "at " + p.timestamp);
-		pos.PublishData(0, 0);
+		
+		writer.write(p,instance_handle);
 	}
 	
 }

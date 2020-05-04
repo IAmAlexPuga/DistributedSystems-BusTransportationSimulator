@@ -1,7 +1,7 @@
 Welcome to your first Connext DDS example! 
 
 This example was generated for architecture x64Win64VS2017, using the
-data type Position from Position.idl.
+data type Position from structs.idl.
 This example builds two applications, named PositionPublisher
 and PositionSubscriber.
 

@@ -74,22 +74,19 @@ public class AccidentSubscriber {
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
-	public void Invoke()
-	{
-		subscriberMain(0, 0);
-	}
+
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
-        /*if (args.length >= 1) {
+        if (args.length >= 1) {
             domainId = Integer.valueOf(args[0]).intValue();
-        }*/
+        }
 
         // -- Get max loop count; 0 means infinite loop --- //
         int sampleCount = 0;
-        /*if (args.length >= 2) {
+        if (args.length >= 2) {
             sampleCount = Integer.valueOf(args[1]).intValue();
-        }*/
+        }
 
         /* Uncomment this to turn on additional logging
         Logger.get_instance().set_verbosity_by_category(
@@ -98,7 +95,7 @@ public class AccidentSubscriber {
         */
 
         // --- Run --- //
-        
+        subscriberMain(domainId, sampleCount);
     }
 
     // -----------------------------------------------------------------------
@@ -112,8 +109,14 @@ public class AccidentSubscriber {
     }
 
     // -----------------------------------------------------------------------
-
-    private static void subscriberMain(int domainId, int sampleCount) {
+    
+    synchronized public void RunMain()
+    {
+    	
+    	subscriberMain(1,10000);
+    }
+    
+    synchronized private static void subscriberMain(int domainId, int sampleCount) {
 
         DomainParticipant participant = null;
         Subscriber subscriber = null;
@@ -129,10 +132,7 @@ public class AccidentSubscriber {
             the configuration file
             USER_QOS_PROFILES.xml */
 
-            participant = DomainParticipantFactory.TheParticipantFactory.
-            create_participant(
-                domainId, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
-                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            participant = DomainParticipantFactory.TheParticipantFactory.create_participant(0, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (participant == null) {
                 System.err.println("create_participant error\n");
                 return;
@@ -143,9 +143,7 @@ public class AccidentSubscriber {
             /* To customize subscriber QoS, use
             the configuration file USER_QOS_PROFILES.xml */
 
-            subscriber = participant.create_subscriber(
-                DomainParticipant.SUBSCRIBER_QOS_DEFAULT, null /* listener */,
-                StatusKind.STATUS_MASK_NONE);
+            subscriber = participant.create_subscriber(DomainParticipant.SUBSCRIBER_QOS_DEFAULT, null /* listener */,StatusKind.STATUS_MASK_NONE);
             if (subscriber == null) {
                 System.err.println("create_subscriber error\n");
                 return;
@@ -161,7 +159,7 @@ public class AccidentSubscriber {
             the configuration file USER_QOS_PROFILES.xml */
 
             topic = participant.create_topic(
-                "P3464_EECS_apuga: PT/ALR/ACC",
+                "Example Accident",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {
@@ -192,6 +190,8 @@ public class AccidentSubscriber {
             for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
+                //System.out.println("Accident subscriber sleeping for "
+                //+ receivePeriodSec + " sec...");
 
                 try {
                     Thread.sleep(receivePeriodSec * 1000);  // in millisec
@@ -246,9 +246,9 @@ public class AccidentSubscriber {
                     SampleInfo info = (SampleInfo)_infoSeq.get(i);
 
                     if (info.valid_data) {
-                        System.out.println(
-                            ((Accident)_dataSeq.get(i)).toString("Received",0));
-
+                        Accident acc = ((Accident)_dataSeq.get(i));
+                        
+                    	System.out.println("Accident \t"+ acc.route + "\t" + acc.vehicle+"     "+ "     "+acc.stopNumber+"    "+"    "+ " \t "+"    "+acc.timestamp);     
                     }
                 }
             } catch (RETCODE_NO_DATA noData) {

@@ -74,24 +74,7 @@ public class PositionPublisher {
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
-	// Sets the new Position
-	public void SetPosition(int boarding, String time, Position p) {
-		// TODO Auto-generated method stub
-		this.p = p;
-		this.boarding = boarding;
-		this.timeStampBetween = time;
-	}
-	
-	// Publishes data
-	public static void PublishData(int domainId, int sampleCount)
-	{
-		publisherMain(domainId, sampleCount);
-	}
-	
-	static Position p;
-	static String timeStampBetween = "";
-	static int boarding = 0;
-	
+
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
@@ -111,6 +94,9 @@ public class PositionPublisher {
             LogVerbosity.NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
         */
 
+        // --- Run --- //
+        Position P = new Position();
+        publisherMain(domainId, sampleCount, P);
     }
 
     // -----------------------------------------------------------------------
@@ -124,8 +110,13 @@ public class PositionPublisher {
     }
 
     // -----------------------------------------------------------------------
+    public static void runPubMain(int domainid, int sampleCount, Position pos)
+    {
+    	publisherMain(domainid, sampleCount, pos);
+    }
 
-    private static void publisherMain(int domainId, int sampleCount) {
+    
+    private static void publisherMain(int domainId, int sampleCount, Position pos) {
 
         DomainParticipant participant = null;
         Publisher publisher = null;
@@ -171,7 +162,7 @@ public class PositionPublisher {
             the configuration file USER_QOS_PROFILES.xml */
 
             topic = participant.create_topic(
-                "P3464_EECS_apuga: PT/POS",
+                "Example Position",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {
@@ -196,7 +187,7 @@ public class PositionPublisher {
             // --- Write --- //
 
             /* Create data sample for writing */
-            Position instance = new Position();
+            Position instance = pos;
 
             InstanceHandle_t instance_handle = InstanceHandle_t.HANDLE_NIL;
             /* For a data type that has a key, if the same instance is going to be
@@ -204,27 +195,20 @@ public class PositionPublisher {
             and register the keyed instance prior to writing */
             //instance_handle = writer.register_instance(instance);
 
-            final long sendPeriodMillis = 0 * 1000;
+            final long sendPeriodMillis = 0 * 1000; // 4 seconds
 
             for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
-                System.out.println("Writing Position, count " + count);
-
-                /* Modify the instance to be written here */
-                
-                
-                /* Write data */
-                writer.write(p, instance_handle);
-                try {
-                    Thread.sleep(sendPeriodMillis);
-                } catch (InterruptedException ix) {
-                    System.err.println("INTERRUPTED");
-                    break;
-                }
+            	System.out.println(instance.toString());
+                writer.write(instance, instance_handle);
+				
+				 try { Thread.sleep(sendPeriodMillis); } catch (InterruptedException ix) {
+				 System.err.println("INTERRUPTED"); break; }
+				 
             }
 
-            //writer.unregister_instance(instance, instance_handle);
+            writer.unregister_instance(instance, instance_handle);
 
         } finally {
 
@@ -244,6 +228,5 @@ public class PositionPublisher {
             //DomainParticipantFactory.finalize_instance();
         }
     }
-
 }
 

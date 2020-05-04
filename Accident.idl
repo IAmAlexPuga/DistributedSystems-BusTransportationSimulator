@@ -1,8 +1,0 @@
-// accident.idl
-struct Accident
-{
-string timestamp;
-string route;
-string vehicle;
-long stopNumber;
-};

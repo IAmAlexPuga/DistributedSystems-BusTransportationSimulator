@@ -68,6 +68,7 @@ import com.rti.dds.subscription.*;
 import com.rti.dds.topic.*;
 import com.rti.ndds.config.*;
 
+
 // ===========================================================================
 
 public class PositionSubscriber {
@@ -78,9 +79,9 @@ public class PositionSubscriber {
     public static void main(String[] args) {
         // --- Get domain ID --- //
         int domainId = 0;
-        /*if (args.length >= 1) {
+        if (args.length >= 1) {
             domainId = Integer.valueOf(args[0]).intValue();
-        }*/
+        }
 
         // -- Get max loop count; 0 means infinite loop --- //
         int sampleCount = 0;
@@ -109,8 +110,32 @@ public class PositionSubscriber {
     }
 
     // -----------------------------------------------------------------------
-
-    private static void subscriberMain(int domainId, int sampleCount) {
+    
+    public static DataReaderListener listener = new PositionListener();
+    public static DomainParticipant participant = DomainParticipantFactory.TheParticipantFactory.create_participant(0, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
+    public static Subscriber subscriber = participant.create_subscriber(DomainParticipant.SUBSCRIBER_QOS_DEFAULT, null /* listener */,StatusKind.STATUS_MASK_NONE);
+    
+    synchronized public static Subscriber getSub()
+    {
+    	return subscriber;
+    }
+    synchronized public static DataReaderListener getListener()
+    {
+    	return listener;
+    }
+    
+    synchronized public static DomainParticipant getDomain()
+    {
+    	return participant;
+    }
+    
+    
+    synchronized public void RunMain()
+    {
+    	subscriberMain(1,10000);
+    }
+    
+    synchronized private static void subscriberMain(int domainId, int sampleCount) {
 
         DomainParticipant participant = null;
         Subscriber subscriber = null;
@@ -126,10 +151,7 @@ public class PositionSubscriber {
             the configuration file
             USER_QOS_PROFILES.xml */
 
-            participant = DomainParticipantFactory.TheParticipantFactory.
-            create_participant(
-                domainId, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
-                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            participant = getDomain();
             if (participant == null) {
                 System.err.println("create_participant error\n");
                 return;
@@ -140,9 +162,7 @@ public class PositionSubscriber {
             /* To customize subscriber QoS, use
             the configuration file USER_QOS_PROFILES.xml */
 
-            subscriber = participant.create_subscriber(
-                DomainParticipant.SUBSCRIBER_QOS_DEFAULT, null /* listener */,
-                StatusKind.STATUS_MASK_NONE);
+            subscriber = getSub();
             if (subscriber == null) {
                 System.err.println("create_subscriber error\n");
                 return;
@@ -158,7 +178,7 @@ public class PositionSubscriber {
             the configuration file USER_QOS_PROFILES.xml */
 
             topic = participant.create_topic(
-            		"P3464_EECS_apuga: PT/POS",
+                "Example Position",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {
@@ -168,7 +188,7 @@ public class PositionSubscriber {
 
             // --- Create reader --- //
 
-            listener = new PositionListener();
+            listener = getListener();
 
             /* To customize data reader QoS, use
             the configuration file USER_QOS_PROFILES.xml */
@@ -184,11 +204,13 @@ public class PositionSubscriber {
 
             // --- Wait for data --- //
 
-            final long receivePeriodSec = 0;
+            final long receivePeriodSec = 4;
 
             for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
+                //System.out.println("Position subscriber sleeping for "
+                //+ receivePeriodSec + " sec...");
 
                 try {
                     Thread.sleep(receivePeriodSec * 1000);  // in millisec
@@ -227,7 +249,7 @@ public class PositionSubscriber {
         PositionSeq _dataSeq = new PositionSeq();
         SampleInfoSeq _infoSeq = new SampleInfoSeq();
 
-        public void on_data_available(DataReader reader) {
+        synchronized public void on_data_available(DataReader reader) {
             PositionDataReader PositionReader =
             (PositionDataReader)reader;
 
@@ -243,8 +265,16 @@ public class PositionSubscriber {
                     SampleInfo info = (SampleInfo)_infoSeq.get(i);
 
                     if (info.valid_data) {
-                        System.out.println(
-                            ((Position)_dataSeq.get(i)).toString("Received",0));
+
+                        Position po = ((Position)_dataSeq.get(i));
+                        if(po.trafficConditions.equals("Light") || po.trafficConditions.equals("Heavy") )
+                        {
+                        	System.out.println("Position \t"+ po.route + "\t" + po.vehicle+"     "+po.trafficConditions+ "     "+po.stopNumber+"   "+po.numStops+"         "+ po.timeBetweenStops+" \t          "+po.fillInRation+"              "+po.timestamp);     
+
+                        }else {
+                        	System.out.println("Position \t"+ po.route + "\t" + po.vehicle+"     "+po.trafficConditions+ "    "+po.stopNumber+"   "+po.numStops+"         "+ po.timeBetweenStops+" \t          "+po.fillInRation+"               "+po.timestamp);     
+                        }
+                    
 
                     }
                 }

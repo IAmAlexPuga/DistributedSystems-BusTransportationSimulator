@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- 
 Description
-XML QoS Profile for Position
+XML QoS Profile for structs
 
 (c) Copyright, Real-Time Innovations, 2012.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative
@@ -127,26 +127,44 @@ XML" chapter in the RTI Connext DDS Core Libraries User's Manual.
 
         A QoS library is a named set of QoS profiles.
     -->
-    <qos_library name="Position_Library">
+    <qos_library name="structs_Library">
 
         <!-- QoS profile used to configure reliable communication between the DataWriter 
              and DataReader created in the example code.
 
              A QoS profile groups a set of related QoS.
         -->
-        <qos_profile name="Position_Profile" base_name="BuiltinQosLib::Generic.StrictReliable" is_default_qos="true">
+        <qos_profile name="structs_Profile" base_name="BuiltinQosLib::Generic.StrictReliable" is_default_qos="true">
             <!-- QoS used to configure the data writer created in the example code -->                
             <datawriter_qos>
                 <publication_name>
-                    <name>PositionDataWriter</name>
+                    <name>structsDataWriter</name>
                 </publication_name>
+		<reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+            	</reliability>
+            	<history>
+                    	<kind>KEEP_ALL_HISTORY_QOS</kind>
+            	</history>
+            	<durability>
+                    	<kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+            	</durability>
             </datawriter_qos>
 
             <!-- QoS used to configure the data reader created in the example code -->                
             <datareader_qos>
                 <subscription_name>
-                    <name>PositionDataReader</name>
+                    <name>structsDataReader</name>
                 </subscription_name>
+		<reliability>
+                	<kind>RELIABLE_RELIABILITY_QOS</kind>
+            	</reliability>
+            	<history>
+                	<kind>KEEP_ALL_HISTORY_QOS</kind>
+            	</history>
+            	<durability>
+                	<kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+            	</durability>
             </datareader_qos>
             <participant_qos>
                 <!--
@@ -155,8 +173,8 @@ XML" chapter in the RTI Connext DDS Core Libraries User's Manual.
                 application from another when you're debugging.
                 -->
                 <participant_name>
-                    <name>PositionParticipant</name>
-                    <role_name>PositionParticipantRole</role_name>
+                    <name>structsParticipant</name>
+                    <role_name>structsParticipantRole</role_name>
                 </participant_name>
 
             </participant_qos>

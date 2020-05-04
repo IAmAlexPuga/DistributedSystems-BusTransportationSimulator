@@ -71,6 +71,7 @@ public class PubLauncher
 			p.timestamp = now.toString();
 			p.trafficConditions = "Normal";
 			p.fillInRation = 0;
+			p.route = Route1N;
 			p.stopNumber = 1;
 			
 			
@@ -89,6 +90,7 @@ public class PubLauncher
 			// Route 2 common attr
 			p.numStops = Integer.parseInt((String)propFile.get("route2numStops"));
 			p.timeBetweenStops = Integer.parseInt((String)propFile.get("route2TimeBetweenStops"));
+			p.route = Route2N;
 			
 			p.vehicle = (String)propFile.get("route2Vehicle1");
 			threads[3] = new PubThread(p,now);
