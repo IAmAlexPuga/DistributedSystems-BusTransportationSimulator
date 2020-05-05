@@ -20,14 +20,13 @@ public class PubThread extends Thread {
 	AccidentPublisher accident;
 
 	// Positoins
-	DomainParticipant participant = null;
 	PositionDataWriter writer = null;
 
 	// Accidents
-	DomainParticipant a_participant = null;
 	AccidentDataWriter a_writer = null;
 	
 	InstanceHandle_t instance_handle = InstanceHandle_t.HANDLE_NIL;
+	DomainParticipant participant = null;
 
 	public PubThread(Position pos, LocalDateTime time) {
 
@@ -44,29 +43,27 @@ public class PubThread extends Thread {
 		this.dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 		this.pos = new PositionPublisher();
 		this.accident = new AccidentPublisher();
-		Random rand = new Random();
 
 		InitPosVars();
+		InitAccVars();
 
 		System.out.println("Thread " + p.vehicle + " Started");
 	}
 
 	public void InitAccVars() {
-		DomainParticipant participant = null;
 		Publisher publisher = null;
 		Topic topic = null;
-		AccidentDataWriter writer = null;
 
-		participant = DomainParticipantFactory.TheParticipantFactory.create_participant(0,DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT, null /* listener */, StatusKind.STATUS_MASK_NONE);
+		//participant = DomainParticipantFactory.TheParticipantFactory.create_participant(1,DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT, null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (participant == null) {
 
-			System.err.println("create_participant error\n");
+			System.err.println("accident create_participant error\n");
 			return;
 		}
 
 		publisher = participant.create_publisher(DomainParticipant.PUBLISHER_QOS_DEFAULT, null /* listener */,StatusKind.STATUS_MASK_NONE);
 		if (publisher == null) {
-			System.err.println("create_publisher error\n");
+			System.err.println("accident create_publisher error\n");
 			return;
 		}
 
@@ -76,13 +73,13 @@ public class PubThread extends Thread {
 
 		topic = participant.create_topic("Example Accident", typeName, DomainParticipant.TOPIC_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (topic == null) {
-			System.err.println("create_topic error\n");
+			System.err.println("accident create_topic error\n");
 			return;
 		}
 
 		a_writer = (AccidentDataWriter) publisher.create_datawriter(topic, Publisher.DATAWRITER_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
-		if (writer == null) {
-			System.err.println("create_datawriter error\n");
+		if (a_writer == null) {
+			System.err.println("accident create_datawriter error\n");
 			return;
 		}
 
@@ -92,10 +89,9 @@ public class PubThread extends Thread {
 		Publisher publisher = null;
 		Topic topic = null;
 
-		participant = DomainParticipantFactory.TheParticipantFactory.create_participant(0,
-				DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT, null /* listener */, StatusKind.STATUS_MASK_NONE);
+		participant = DomainParticipantFactory.TheParticipantFactory.create_participant(0,DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT, null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (participant == null) {
-			System.err.println("create_participant error\n");
+			System.err.println("position create_participant error\n");
 			return;
 		}
 
@@ -103,7 +99,7 @@ public class PubThread extends Thread {
 				StatusKind.STATUS_MASK_NONE);
 		if (publisher == null) {
 
-			System.err.println("create_publisher error\n");
+			System.err.println("position create_publisher error\n");
 			return;
 		}
 
@@ -113,13 +109,13 @@ public class PubThread extends Thread {
 		topic = participant.create_topic("Example Position", typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
 				null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (topic == null) {
-			System.err.println("create_topic error\n");
+			System.err.println("position create_topic error\n");
 			return;
 		}
 
 		writer = (PositionDataWriter) publisher.create_datawriter(topic, Publisher.DATAWRITER_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (writer == null) {
-			System.err.println("create_datawriter error\n");
+			System.err.println("position create_datawriter error\n");
 			return;
 		}
 	}
@@ -144,19 +140,26 @@ public class PubThread extends Thread {
 				} else {
 					departing = 0;
 				}
-
+				
 				Stop(rand.nextInt(100 - p.fillInRation) - departing, GetTimeStampBetween(old));
 				p.stopNumber++;
 			}
 		} finally {
-			if (participant != null) {
-				participant.delete_contained_entities();
-
-				DomainParticipantFactory.TheParticipantFactory.delete_participant(participant);
-			}
+			
+			DeleteParticipant(participant);
 		}
 	}
+	
+	// Removes a participant
+	public void DeleteParticipant(DomainParticipant participant)
+	{
+		if (participant != null) {
+			participant.delete_contained_entities();
 
+			DomainParticipantFactory.TheParticipantFactory.delete_participant(participant);
+		}
+	}
+	
 	// Sets the traffic and ads the set time based on traffic
 	public void SetTraffic(int chance) {
 		if (chance < 26) {
