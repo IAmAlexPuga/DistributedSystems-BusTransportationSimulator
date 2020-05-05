@@ -22,3 +22,10 @@
 /PubLauncher.class
 /PubThread.class
 /test.class
+/Passanger.class
+/Passanger$AccidentListener.class
+/AccidentFiltered.class
+/AccidentFiltered$AccidentListener.class
+/AccidentListener.class
+/PositionFilter.class
+/PositionFilter$PositionListener.class
