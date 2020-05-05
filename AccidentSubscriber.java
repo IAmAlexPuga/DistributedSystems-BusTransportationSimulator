@@ -248,7 +248,7 @@ public class AccidentSubscriber{
                     if (info.valid_data) {
                         Accident acc = ((Accident)_dataSeq.get(i));
                         
-                    	System.out.println("Accident \t"+ acc.route + "\t" + acc.vehicle+"     "+ "     "+acc.stopNumber+"    "+"    "+ " \t "+"    "+acc.timestamp);     
+                    	System.out.println("Accident \t"+ acc.route + "\t" + acc.vehicle+"     \t    "+acc.stopNumber+"\t." +"\t  .               .\t\t"+acc.timestamp);     
                     }
                 }
             } catch (RETCODE_NO_DATA noData) {

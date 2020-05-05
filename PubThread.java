@@ -131,6 +131,10 @@ public class PubThread extends Thread {
 					Cycles++;
 					p.stopNumber = 1;
 				}
+				if(Cycles > 4)
+				{
+					break;
+				}
 				old = this.now;
 				SetTraffic(rand.nextInt(101) + 1);
 				CheckAccident(rand.nextInt(101) + 1);
@@ -222,6 +226,11 @@ public class PubThread extends Thread {
 				+ p.route + " at " + p.timestamp);
 		
 		a_writer.write(acc, instance_handle);
+		try {
+			this.currentThread().wait(3);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// post a stop
@@ -229,8 +238,13 @@ public class PubThread extends Thread {
 		p.fillInRation += boarding;
 		System.out.println(p.vehicle + " published a position message at stop # " + p.stopNumber + " on route "
 				+ p.route + "at " + p.timestamp);
-
+		
 		writer.write(p, instance_handle);
+		try {
+			this.currentThread().wait(3);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
