@@ -227,7 +227,7 @@ public class PubThread extends Thread {
 		
 		a_writer.write(acc, instance_handle);
 		try {
-			this.currentThread().wait(3);
+			this.currentThread().wait(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -241,7 +241,7 @@ public class PubThread extends Thread {
 		
 		writer.write(p, instance_handle);
 		try {
-			this.currentThread().wait(3);
+			this.currentThread().wait(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

@@ -194,7 +194,7 @@ class PositionFilter extends Thread{
         PositionSeq _dataSeq = new PositionSeq();
         SampleInfoSeq _infoSeq = new SampleInfoSeq();
 
-        public void on_data_available(DataReader reader) {
+        synchronized public void on_data_available(DataReader reader) {
             PositionDataReader PositionReader =
             (PositionDataReader)reader;
 
@@ -212,31 +212,26 @@ class PositionFilter extends Thread{
                     if (info.valid_data) {
                         Position po = ((Position)_dataSeq.get(i));
                         
-                        
-                        
-                        if(po.stopNumber == p.waitingAtStop && po.route.equals(p.waitingAtRoute) && p.onBoard == false)
+                        if(p.onBoard == false)
                         {
-                        	p.onBus = po.route;
-                        	p.onBoard = true;
-                        	System.out.println("Passanger # "+p.ID +" is on board bus " + po.vehicle);
-                        }
-                        
-                        else if(p.onBoard && po.vehicle.equals(p.onBus))
+                        	PrintInfo(po);
+                        	
+                        	if(po.stopNumber == p.waitingAtStop)
+                            {
+                            	p.onBus = po.vehicle;
+                            	p.onBoard = true;
+                            	
+                            	System.out.println("Passanger # "+p.ID +" is on board bus " + po.vehicle);
+                            }
+                        	
+                        }else if(po.vehicle.equals(p.onBus))
                         {
-                        	 
-                             if(po.trafficConditions.equals("Light") || po.trafficConditions.equals("Heavy") )
+                        	 PrintInfo(po);
+                        	 if(po.stopNumber == p.destination && p.onBoard == true)
                              {
-                             	System.out.println("Position \t"+ po.route + "\t" + po.vehicle+"     "+po.trafficConditions+ "     "+po.stopNumber+"   "+po.numStops+"         "+ po.timeBetweenStops+" \t          "+po.fillInRation+"              "+po.timestamp);     
-
-                             }else {
-                             	System.out.println("Position \t"+ po.route + "\t" + po.vehicle+"     "+po.trafficConditions+ "    "+po.stopNumber+"   "+po.numStops+"         "+ po.timeBetweenStops+" \t          "+po.fillInRation+"               "+po.timestamp);     
+                             	System.out.println("Passanger # "+p.ID +" is getting off bus " + po.vehicle);
+                             	p.leftBus = true;
                              }
-                        }
-                        
-                        if(p.onBus != "" && po.stopNumber == p.destination)
-                        {
-                        	System.out.println("Passanger # "+p.ID +" is getting off bus " + po.vehicle);
-                        	p.leftBus = true;
                         }
                   
                     }
@@ -249,4 +244,15 @@ class PositionFilter extends Thread{
         }
     }
 
+    
+    private void PrintInfo(Position po)
+    {
+    	if(po.trafficConditions.equals("Light") || po.trafficConditions.equals("Heavy") )
+        {
+        	System.out.println("Position \t"+ po.route + "\t" + po.vehicle+"     "+po.trafficConditions+ "     "+po.stopNumber+"   "+po.numStops+"         "+ po.timeBetweenStops+" \t          "+po.fillInRation+"              "+po.timestamp);     
+
+        }else {
+        	System.out.println("Position \t"+ po.route + "\t" + po.vehicle+"     "+po.trafficConditions+ "    "+po.stopNumber+"   "+po.numStops+"         "+ po.timeBetweenStops+" \t          "+po.fillInRation+"               "+po.timestamp);     
+        }
+    }
 }

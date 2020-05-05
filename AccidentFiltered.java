@@ -21,8 +21,7 @@ class AccidentFiltered extends Thread
 {
 	
 	Passanger p;
-	boolean leftBus = false;
-	String onBus = "";
+
 	
 	public AccidentFiltered(Passanger p)
 	{
@@ -123,7 +122,7 @@ class AccidentFiltered extends Thread
             }                         
 
             // --- Wait for data --- //
-            if(leftBus == false)
+            if(p.leftBus == false)
             {
             	if(p.onBoard == true)
                 {
@@ -131,7 +130,7 @@ class AccidentFiltered extends Thread
 
                 	try {
                 		cft.remove_from_expression_parameter(0, p.waitingAtRoute);
-                        cft.append_to_expression_parameter(0, onBus);
+                        cft.append_to_expression_parameter(0, p.onBus);
                     } catch (Exception e) {
                         System.err.println("append_to_expression_parameter "
                                 + "error");
@@ -157,7 +156,7 @@ class AccidentFiltered extends Thread
                 //System.out.println("Accident subscriber sleeping for "
                 //+ receivePeriodSec + " sec...");
             	
-            	if(leftBus == true)
+            	if(p.leftBus == true)
             	{
             		break;
             	}
@@ -218,14 +217,17 @@ class AccidentFiltered extends Thread
                     if (info.valid_data) {
                         Accident acc = ((Accident)_dataSeq.get(i));
                         
-                        
-                        
-                        if(p.onBoard && acc.vehicle.equals(p.waitingAtRoute))
+                        if(p.onBoard == false)
                         {
-                        	System.out.println("Accident \t"+ acc.route + "\t" + acc.vehicle+"     \t    "+acc.stopNumber+"\t." +"\t  .               .\t\t"+acc.timestamp);
-                        }else if(onBus != "" && acc.stopNumber == p.destination)
+                        	PrintInfo(acc);
+
+                        }else if(acc.vehicle.equals(p.onBus))
                         {
-                        	leftBus = true;
+                        	 PrintInfo(acc);
+                        	 if(acc.stopNumber == p.destination && p.onBoard == true)
+                             {
+                             	p.leftBus = true;
+                             }
                         }
                   
                     }
@@ -236,6 +238,11 @@ class AccidentFiltered extends Thread
                 AccidentReader.return_loan(_dataSeq, _infoSeq);
             }
         }
+    }
+    
+    private void PrintInfo(Accident acc)
+    {
+    	System.out.println("Accident \t"+ acc.route + "\t" + acc.vehicle+"     \t    "+acc.stopNumber+"\t." +"\t  .               .   \t\t"+acc.timestamp);
     }
 
 }
