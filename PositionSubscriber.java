@@ -178,7 +178,7 @@ public class PositionSubscriber {
             the configuration file USER_QOS_PROFILES.xml */
 
             topic = participant.create_topic(
-                "Example Position",
+                "P3464_EECS_apuga: PT/POS",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {

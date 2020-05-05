@@ -70,7 +70,7 @@ public class PubThread extends Thread {
 		AccidentTypeSupport.register_type(participant, typeName);
 
 
-		topic = participant.create_topic("Example Accident", typeName, DomainParticipant.TOPIC_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
+		topic = participant.create_topic("P3464_EECS_apuga: PT/ALR/ACC", typeName, DomainParticipant.TOPIC_QOS_DEFAULT,null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (topic == null) {
 			System.err.println("accident create_topic error\n");
 			return;
@@ -105,7 +105,7 @@ public class PubThread extends Thread {
 		String typeName = PositionTypeSupport.get_type_name();
 		PositionTypeSupport.register_type(participant, typeName);
 
-		topic = participant.create_topic("Example Position", typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
+		topic = participant.create_topic("P3464_EECS_apuga: PT/POS", typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
 				null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (topic == null) {
 			System.err.println("position create_topic error\n");
