@@ -9,15 +9,13 @@ public class Operator
 		
 		PositionSubThread pos = new PositionSubThread();
 		AccidentSubThread acc = new AccidentSubThread();
+
 		
 		try
 		{
 			pos.start();
 			acc.start();
-			
 			PrintChart();
-			//pos.join();
-			//acc.join();
 			
 		}catch (Exception e){
 			e.printStackTrace();

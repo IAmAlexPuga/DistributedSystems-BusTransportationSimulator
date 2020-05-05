@@ -132,7 +132,7 @@ public class PositionSubscriber {
     
     synchronized public void RunMain()
     {
-    	subscriberMain(1,10000);
+    	subscriberMain(0,10000);
     }
     
     synchronized private static void subscriberMain(int domainId, int sampleCount) {

@@ -54,7 +54,6 @@ public class PubThread extends Thread {
 		Publisher publisher = null;
 		Topic topic = null;
 
-		//participant = DomainParticipantFactory.TheParticipantFactory.create_participant(1,DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT, null /* listener */, StatusKind.STATUS_MASK_NONE);
 		if (participant == null) {
 
 			System.err.println("accident create_participant error\n");

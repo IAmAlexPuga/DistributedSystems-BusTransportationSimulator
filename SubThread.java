@@ -6,9 +6,8 @@ class PositionSubThread extends Thread
 	
 	public void run()
 	{
-		
-		sub.RunMain();
-		
+		String[] empty = {};
+		sub.main(empty);
 	}
 
 }
@@ -19,7 +18,7 @@ class AccidentSubThread extends Thread
 	
 	public void run()
 	{
-		sub.RunMain();
+		String[] empty = {};
+		sub.main(empty);
 	}
-
 }

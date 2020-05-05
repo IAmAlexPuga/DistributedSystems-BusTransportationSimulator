@@ -70,7 +70,7 @@ import com.rti.ndds.config.*;
 
 // ===========================================================================
 
-public class AccidentSubscriber {
+public class AccidentSubscriber{
     // -----------------------------------------------------------------------
     // Public Methods
     // -----------------------------------------------------------------------
@@ -110,7 +110,7 @@ public class AccidentSubscriber {
 
     // -----------------------------------------------------------------------
     
-    synchronized public void RunMain()
+    public void RunMain()
     {
     	
     	subscriberMain(0,10000);
