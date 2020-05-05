@@ -16,9 +16,6 @@ public class PubThread extends Thread {
 	DateTimeFormatter dtf;
 	int Cycles = 1;
 
-	PositionPublisher pos;
-	AccidentPublisher accident;
-
 	// Positoins
 	PositionDataWriter writer = null;
 
@@ -41,8 +38,6 @@ public class PubThread extends Thread {
 
 		this.now = time;
 		this.dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-		this.pos = new PositionPublisher();
-		this.accident = new AccidentPublisher();
 
 		InitPosVars();
 		InitAccVars();
