@@ -178,6 +178,7 @@ public class PubThread extends Thread {
 		LocalDateTime time = now.plusNanos(1000000000 * nanosec);
 		time.format(dtf);
 		now = time;
+		p.timestamp = now.toString();
 	}
 
 	// Checks if an accident has occured
