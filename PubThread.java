@@ -14,8 +14,14 @@ public class PubThread extends Thread {
 	Position p = new Position();
 	LocalDateTime now;
 	DateTimeFormatter dtf;
+	
+	// traffic conditions
 	int Cycles = 1;
-
+	int hTraffic = 0;
+	int lTraffic = 0;
+	int nTraffic = 0;
+	int acci = 0;
+	
 	// Positoins
 	PositionDataWriter writer = null;
 
@@ -25,7 +31,7 @@ public class PubThread extends Thread {
 	InstanceHandle_t instance_handle = InstanceHandle_t.HANDLE_NIL;
 	DomainParticipant participant = null;
 
-	public PubThread(Position pos, LocalDateTime time) {
+	public PubThread(Position pos, LocalDateTime time, int ht, int lt, int nt, int acc) {
 
 		p.fillInRation = pos.fillInRation;
 		p.numStops = pos.numStops;
@@ -35,7 +41,12 @@ public class PubThread extends Thread {
 		p.timestamp = pos.timestamp;
 		p.trafficConditions = pos.trafficConditions;
 		p.vehicle = pos.vehicle;
-
+		
+		hTraffic = ht;
+		lTraffic = lt;
+		nTraffic = nt;
+		acci = acc;
+		
 		this.now = time;
 		this.dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -160,10 +171,10 @@ public class PubThread extends Thread {
 	
 	// Sets the traffic and ads the set time based on traffic
 	public void SetTraffic(int chance) {
-		if (chance < 26) {
+		if (chance < lTraffic) {
 			p.trafficConditions = "Light";
 			SetTime((long) (p.timeBetweenStops - (.25 * p.timeBetweenStops)));
-		} else if (chance > 89) {
+		} else if (chance > 100 - hTraffic) {
 			p.trafficConditions = "Heavy";
 			SetTime((long) (1.5 * p.timeBetweenStops));
 		} else {
@@ -183,7 +194,7 @@ public class PubThread extends Thread {
 
 	// Checks if an accident has occured
 	public void CheckAccident(int chance) {
-		if (chance < 11) {
+		if (chance < acci) {
 			SetTime(10);
 			p.timestamp = now.toString();
 			PostAccident();

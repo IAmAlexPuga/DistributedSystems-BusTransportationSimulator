@@ -14,6 +14,10 @@ public class PubLauncher
 {
 	private static int RouteCount,BusCount;
 	private static String Route1N, Route2N;
+	private static int hTraffic = 0;
+	private static int lTraffic = 0;
+	private static int nTraffic = 0;
+	private static int acc = 0;
 	private static  PubThread[] threads = new PubThread[6];
 	
 	public static void main(String[] args)
@@ -63,6 +67,11 @@ public class PubLauncher
 			
 			Route2N = (String)propFile.get("route2");
 			
+			lTraffic = Integer.parseInt((String)propFile.get("ltraf"));
+			hTraffic = Integer.parseInt((String)propFile.get("htraf"));
+			nTraffic = Integer.parseInt((String)propFile.get("ntraf"));
+			acc = Integer.parseInt((String)propFile.get("acc"));
+			
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 			LocalDateTime now = LocalDateTime.now();
 			Position p = new Position();
@@ -79,13 +88,13 @@ public class PubLauncher
 			p.numStops = Integer.parseInt((String)propFile.get("route1numStops"));
 			p.timeBetweenStops = Integer.parseInt((String)propFile.get("route1TimeBetweenStops"));
 			p.vehicle = (String)propFile.get("route1Vehicle1");
-			threads[0] = new PubThread(p,now);
+			threads[0] = new PubThread(p,now,lTraffic,hTraffic,nTraffic,acc);
 			
 			p.vehicle = (String)propFile.get("route1Vehicle2");
-			threads[1] = new PubThread(p,now);
+			threads[1] = new PubThread(p,now,lTraffic,hTraffic,nTraffic,acc);
 			
 			p.vehicle = (String)propFile.get("route1Vehicle3");
-			threads[2] = new PubThread(p,now);
+			threads[2] = new PubThread(p,now,lTraffic,hTraffic,nTraffic,acc);
 			
 			// Route 2 common attr
 			p.numStops = Integer.parseInt((String)propFile.get("route2numStops"));
@@ -93,14 +102,14 @@ public class PubLauncher
 			p.route = Route2N;
 			
 			p.vehicle = (String)propFile.get("route2Vehicle1");
-			threads[3] = new PubThread(p,now);
+			threads[3] = new PubThread(p,now,lTraffic,hTraffic,nTraffic,acc);
 
 
 			p.vehicle = (String)propFile.get("route2Vehicle2");
-			threads[4] = new PubThread(p,now);
+			threads[4] = new PubThread(p,now,lTraffic,hTraffic,nTraffic,acc);
 			
 			p.vehicle = (String)propFile.get("route2Vehicle3");
-			threads[5] = new PubThread(p,now);
+			threads[5] = new PubThread(p,now,lTraffic,hTraffic,nTraffic,acc);
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
