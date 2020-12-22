@@ -1,4 +1,34 @@
-
+/Accident.class
+/AccidentDataReader.class
+/AccidentDataWriter.class
+/AccidentPublisher.class
+/AccidentSeq.class
+/AccidentSubThread.class
+/AccidentSubscriber$AccidentListener.class
+/AccidentSubscriber.class
+/AccidentTypeCode.class
+/AccidentTypeSupport.class
+/Operator.class
+/Position.class
+/PositionDataReader.class
+/PositionDataWriter.class
+/PositionPublisher.class
+/PositionSeq.class
+/PositionSubThread.class
+/PositionSubscriber$PositionListener.class
+/PositionSubscriber.class
+/PositionTypeCode.class
+/PositionTypeSupport.class
+/PubLauncher.class
+/PubThread.class
+/test.class
+/Passanger.class
+/Passanger$AccidentListener.class
+/AccidentFiltered.class
+/AccidentFiltered$AccidentListener.class
+/AccidentListener.class
+/PositionFilter.class
+/PositionFilter$PositionListener.class
 # Created by https://www.gitignore.io/api/eclipse
 # Edit at https://www.gitignore.io/?templates=eclipse
 

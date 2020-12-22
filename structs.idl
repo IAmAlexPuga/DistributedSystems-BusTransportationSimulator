@@ -1,0 +1,21 @@
+// accident.idl
+struct Accident
+{
+string timestamp;
+string route;
+string vehicle;
+long stopNumber;
+}; //@top-level
+
+//position.idl
+struct Position
+{
+string timestamp;
+string route;
+string vehicle;
+long stopNumber;
+long numStops;
+long timeBetweenStops;
+string trafficConditions;
+long fillInRation;
+}; //@top-level
